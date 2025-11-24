@@ -3,36 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Land Registry Dashboard</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>EtherLand Registry | Decentralized Governance</title>
+    
+    <!-- Bootstrap 5 & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Web3 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.6.1/web3.min.js"></script>
+
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        .navbar { box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-2px); }
-        .btn-custom { border-radius: 8px; font-weight: 600; }
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --danger-red: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .navbar-brand { font-weight: 700; letter-spacing: 0.5px; }
+
+        /* Cards */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); }
         
-        /* ADMIN PANEL HIDDEN BY DEFAULT */
-        #adminPanel { display: none; border-left: 5px solid #dc3545; }
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 1.5rem;
+        }
+
+        /* Inputs */
+        .form-control {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .form-control:focus {
+            background-color: #0f172a;
+            border-color: var(--accent-blue);
+            color: white;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .form-control::placeholder { color: #475569; }
+
+        /* Buttons */
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; }
+        .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; }
         
-        .role-icon { font-size: 2rem; margin-bottom: 10px; color: #6c757d; }
-        .table-responsive { max-height: 300px; overflow-y: auto; }
+        .btn:hover { filter: brightness(1.1); transform: scale(1.02); }
+
+        /* Stats Cards */
+        .stat-card { position: relative; overflow: hidden; }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+        }
+        .stat-value { font-size: 2.5rem; font-weight: 700; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Admin Panel */
+        #adminPanel { display: none; border: 1px solid var(--danger-red); }
+        .badge-soft-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+
+        /* Tables */
+        .table { color: var(--text-secondary); }
+        .table thead th { color: var(--text-primary); background-color: transparent; border-bottom: 1px solid #334155; }
+        .table td { border-bottom: 1px solid #334155; }
+        
     </style>
 </head>
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#"><i class="fas fa-landmark me-2"></i>BlockLand Registry</a>
-            <div class="d-flex align-items-center">
-                <span id="accountArea" class="text-light me-3 small">Not Connected</span>
-                <button id="connectBtn" class="btn btn-primary btn-sm btn-custom" onclick="connectWallet()">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <div class="bg-primary rounded p-2 me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                    <i class="fas fa-cube text-white"></i>
+                </div>
+                EtherLand
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end d-none d-md-block">
+                    <small class="text-secondary d-block" style="font-size: 0.7rem;">CONNECTED ACCOUNT</small>
+                    <span id="accountArea" class="fw-bold text-white" style="font-size: 0.85rem;">Not Connected</span>
+                </div>
+                <button id="connectBtn" class="btn btn-primary btn-sm" onclick="connectWallet()">
                     <i class="fas fa-wallet me-2"></i>Connect Wallet
                 </button>
             </div>
@@ -41,233 +127,265 @@
 
     <div class="container py-5">
         
-        <!-- Quick Stats Row -->
-        <div class="row mb-4">
+        <!-- Live Stats -->
+        <div class="row g-4 mb-5 fade-in">
             <div class="col-md-4">
-                <div class="card text-center p-3 text-white bg-primary bg-gradient">
-                    <h3><i class="fas fa-users me-2"></i>Sellers</h3>
-                    <h2 id="statSellers">-</h2>
+                <div class="card stat-card p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-secondary text-uppercase fw-bold small mb-1">Verified Sellers</p>
+                            <h2 class="stat-value" id="statSellers">-</h2>
+                        </div>
+                        <div class="p-3 rounded-circle bg-primary bg-opacity-10 text-primary">
+                            <i class="fas fa-users fa-lg"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card text-center p-3 text-white bg-success bg-gradient">
-                    <h3><i class="fas fa-tree me-2"></i>Lands Listed</h3>
-                    <h2 id="statLands">-</h2>
+                <div class="card stat-card p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-secondary text-uppercase fw-bold small mb-1">Land Assets</p>
+                            <h2 class="stat-value" id="statLands">-</h2>
+                        </div>
+                        <div class="p-3 rounded-circle bg-success bg-opacity-10 text-success">
+                            <i class="fas fa-map fa-lg"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card text-center p-3 text-white bg-warning bg-gradient text-dark">
-                    <h3><i class="fas fa-hand-holding-usd me-2"></i>Requests</h3>
-                    <h2 id="statRequests">-</h2>
+                <div class="card stat-card p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-secondary text-uppercase fw-bold small mb-1">Transactions</p>
+                            <h2 class="stat-value" id="statRequests">-</h2>
+                        </div>
+                        <div class="p-3 rounded-circle bg-warning bg-opacity-10 text-warning">
+                            <i class="fas fa-exchange-alt fa-lg"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <!-- LEFT COLUMN: User Actions -->
-            <div class="col-lg-4">
-                
-                <!-- SELLER ACTIONS -->
-                <div class="card">
-                    <div class="card-body">
-                        <div class="text-center"><i class="fas fa-user-tie role-icon text-primary"></i></div>
-                        <h5 class="card-title text-center text-primary fw-bold">Seller Zone</h5>
-                        <hr>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-outline-primary btn-custom" data-bs-toggle="modal" data-bs-target="#registerSellerModal">
-                                <i class="fas fa-plus-circle me-2"></i>Register as Seller
-                            </button>
-                            <button class="btn btn-outline-primary btn-custom" data-bs-toggle="modal" data-bs-target="#addLandModal">
-                                <i class="fas fa-map-marked-alt me-2"></i>Add New Land
-                            </button>
-                            <div class="input-group mt-2">
-                                <input type="number" id="approveRequestId" class="form-control" placeholder="Request ID">
-                                <button class="btn btn-primary" onclick="approveRequest()">Approve</button>
-                            </div>
-                        </div>
-                    </div>
+        <!-- ADMIN CONSOLE (Smart Inbox) -->
+        <div id="adminPanel" class="card mb-5 fade-in" style="animation-delay: 0.1s;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center text-danger">
+                    <i class="fas fa-shield-alt fa-lg me-3"></i>
+                    <h5 class="mb-0 fw-bold">ADMINISTRATOR CONSOLE</h5>
                 </div>
-
-                <!-- BUYER ACTIONS -->
-                <div class="card">
-                    <div class="card-body">
-                        <div class="text-center"><i class="fas fa-shopping-cart role-icon text-success"></i></div>
-                        <h5 class="card-title text-center text-success fw-bold">Buyer Zone</h5>
-                        <hr>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-outline-success btn-custom" data-bs-toggle="modal" data-bs-target="#registerBuyerModal">
-                                <i class="fas fa-user-plus me-2"></i>Register as Buyer
-                            </button>
-                            <div class="input-group mt-2">
-                                <input type="number" id="requestLandId" class="form-control" placeholder="Land ID">
-                                <button class="btn btn-success" onclick="requestLand()">Request</button>
-                            </div>
-                            <div class="input-group mt-2">
-                                <input type="number" id="payLandId" class="form-control" placeholder="Land ID">
-                                <button class="btn btn-warning text-dark" onclick="makePayment()">Pay Now 💳</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                <button class="btn btn-sm btn-outline-danger" onclick="loadAdminRequests()">
+                    <i class="fas fa-sync-alt me-2"></i>Sync Data
+                </button>
             </div>
-
-            <!-- RIGHT COLUMN: Admin & Data -->
-            <div class="col-lg-8">
-                
-                <!-- ADMIN DASHBOARD (Smart Inbox Version) -->
-                <div id="adminPanel" class="card shadow-lg">
-                    <div class="card-header bg-danger text-white fw-bold d-flex justify-content-between align-items-center">
-                        <span><i class="fas fa-user-shield me-2"></i>ADMIN CONSOLE</span>
-                        <button class="btn btn-sm btn-light text-danger fw-bold" onclick="loadAdminRequests()">
-                            <i class="fas fa-sync-alt me-1"></i>Refresh Inbox
+            <div class="card-body p-0">
+                <ul class="nav nav-tabs nav-fill border-0" id="adminTabs">
+                    <li class="nav-item">
+                        <button class="nav-link active py-3 text-white bg-transparent border-bottom border-primary" data-bs-toggle="tab" data-bs-target="#tab-verify">
+                            <i class="fas fa-user-check me-2"></i>Pending Verifications <span id="badgeVerify" class="badge bg-danger ms-2">0</span>
                         </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link py-3 text-secondary bg-transparent" data-bs-toggle="tab" data-bs-target="#tab-transfer">
+                            <i class="fas fa-file-signature me-2"></i>Title Transfers <span id="badgeTransfer" class="badge bg-danger ms-2">0</span>
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content p-4">
+                    <!-- Verify Tab -->
+                    <div class="tab-pane fade show active" id="tab-verify">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead><tr><th>Role</th><th>Wallet Address</th><th class="text-end">Action</th></tr></thead>
+                                <tbody id="verificationTableBody"><tr><td colspan="3" class="text-center py-4 text-secondary">Scanning network...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Transfer Tab -->
+                    <div class="tab-pane fade" id="tab-transfer">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead><tr><th>Asset ID</th><th>Status</th><th>Buyer Address (Auto-Detected)</th><th class="text-end">Action</th></tr></thead>
+                                <tbody id="transferTableBody"><tr><td colspan="4" class="text-center py-4 text-secondary">Scanning network...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- LEFT: User Dashboard (HIDDEN IF ADMIN) -->
+            <div id="userActions" class="col-lg-5 fade-in" style="animation-delay: 0.2s;">
+                
+                <!-- SELLER CARD -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="fas fa-hard-hat text-primary me-3"></i>
+                        <h5 class="mb-0 text-white">Seller Portal</h5>
                     </div>
                     <div class="card-body">
-                        <ul class="nav nav-tabs" id="adminTabs">
-                            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#verifyTab">
-                                🔔 Pending Verifications <span id="badgeVerify" class="badge bg-warning text-dark">0</span>
-                            </a></li>
-                            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#transferTab">
-                                ✍️ Transfer Requests <span id="badgeTransfer" class="badge bg-warning text-dark">0</span>
-                            </a></li>
-                        </ul>
+                        <div class="d-grid gap-2 mb-4">
+                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#registerSellerModal">Register New Identity</button>
+                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addLandModal">Tokenize Land Asset</button>
+                        </div>
                         
-                        <div class="tab-content p-3">
-                            <!-- Verification Inbox -->
-                            <div class="tab-pane fade show active" id="verifyTab">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Role</th>
-                                                <th>Wallet Address</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="verificationTableBody">
-                                            <tr><td colspan="3" class="text-center text-muted">Scanning for requests...</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                        <!-- SELLER INBOX (SMART) -->
+                        <div class="bg-dark rounded-3 p-3 border border-secondary border-opacity-25">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <small class="text-uppercase text-secondary fw-bold">Incoming Requests</small>
+                                <button class="btn btn-link p-0 text-secondary" onclick="loadSellerRequests()"><i class="fas fa-sync-alt"></i></button>
                             </div>
-
-                            <!-- Transfer Inbox -->
-                            <div class="tab-pane fade" id="transferTab">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Land ID</th>
-                                                <th>Current Owner</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="transferTableBody">
-                                            <tr><td colspan="4" class="text-center text-muted">Scanning for paid lands...</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <div id="sellerRequestsList" class="d-flex flex-column gap-2">
+                                <div class="text-center text-secondary small py-3">Connect wallet to view requests</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- PUBLIC REGISTRY -->
-                <div class="card mt-4">
-                    <div class="card-header bg-light fw-bold">
-                        <i class="fas fa-globe me-2"></i>Public Land Registry
+                <!-- BUYER CARD -->
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="fas fa-shopping-cart text-success me-3"></i>
+                        <h5 class="mb-0 text-white">Buyer Portal</h5>
                     </div>
                     <div class="card-body">
-                        <div class="input-group mb-3">
-                            <input type="number" id="searchLandId" class="form-control" placeholder="Enter Land ID (e.g. 1)">
-                            <button class="btn btn-dark" onclick="getLandDetails()">Search Registry</button>
-                        </div>
-                        <div id="landResult" class="mt-3">
-                            <div class="alert alert-secondary text-center">Enter an ID to view details</div>
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#registerBuyerModal">Register New Identity</button>
+                            
+                            <div class="bg-dark p-3 rounded-3 border border-secondary border-opacity-25">
+                                <label class="small text-secondary mb-2 d-block">Request to Purchase</label>
+                                <div class="input-group">
+                                    <input type="number" id="requestLandId" class="form-control form-control-sm" placeholder="Land ID">
+                                    <button class="btn btn-sm btn-success" onclick="requestLand()">Send Request</button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-success bg-opacity-10 p-3 rounded-3 border border-success border-opacity-25">
+                                <div class="d-flex align-items-center mb-2 text-success">
+                                    <i class="fas fa-bolt me-2"></i><small class="fw-bold">Instant Payment</small>
+                                </div>
+                                <div class="input-group">
+                                    <input type="number" id="payLandId" class="form-control form-control-sm bg-dark border-success border-opacity-25" placeholder="Approved Land ID">
+                                    <button class="btn btn-sm btn-success" onclick="makePayment()">Pay ETH</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
             </div>
+
+            <!-- RIGHT: Public Registry -->
+            <div class="col-lg-7 fade-in" style="animation-delay: 0.3s;">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="fas fa-globe text-info me-2"></i>
+                        <span class="text-white">Public Registry Explorer</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="p-4 bg-dark rounded-3 mb-4 text-center border border-secondary border-opacity-25">
+                            <h6 class="text-secondary mb-3">Verify Asset Ownership</h6>
+                            <div class="input-group shadow-lg">
+                                <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-search"></i></span>
+                                <input type="number" id="searchLandId" class="form-control border-start-0" placeholder="Enter Asset ID (e.g. 1)">
+                                <button class="btn btn-info text-white px-4" onclick="getLandDetails()">Search</button>
+                            </div>
+                        </div>
+                        
+                        <div id="landResult">
+                            <!-- Results appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- MODALS (Popups for Registration) -->
-    
-    <!-- Register Seller Modal -->
+    <!-- MODALS -->
+    <!-- Register Seller -->
     <div class="modal fade" id="registerSellerModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Register as Seller</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border border-secondary">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-white">Seller Registration</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" id="sellerName" class="form-control mb-2" placeholder="Full Name">
-                    <input type="number" id="sellerAge" class="form-control mb-2" placeholder="Age">
-                    <input type="text" id="sellerAadhar" class="form-control mb-2" placeholder="Aadhar Number">
-                    <input type="text" id="sellerPan" class="form-control mb-2" placeholder="Pan Number">
-                    <input type="text" id="sellerLands" class="form-control mb-2" placeholder="Lands Location">
+                    <form class="d-grid gap-3">
+                        <input type="text" id="sellerName" class="form-control" placeholder="Full Name">
+                        <div class="row g-2">
+                            <div class="col-4"><input type="number" id="sellerAge" class="form-control" placeholder="Age"></div>
+                            <div class="col-8"><input type="text" id="sellerLands" class="form-control" placeholder="Region"></div>
+                        </div>
+                        <input type="text" id="sellerAadhar" class="form-control" placeholder="Aadhar Number">
+                        <input type="text" id="sellerPan" class="form-control" placeholder="PAN Number">
+                    </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="registerSeller()">Submit Registration</button>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-primary w-100" onclick="registerSeller()">Confirm Registration</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add Land Modal -->
+    <!-- Add Land -->
     <div class="modal fade" id="addLandModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Add New Land Asset</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border border-secondary">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-white">Tokenize Land Asset</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row g-2">
-                        <div class="col-md-6"><input type="number" id="landArea" class="form-control" placeholder="Area (Sq ft)"></div>
-                        <div class="col-md-6"><input type="text" id="landCity" class="form-control" placeholder="City"></div>
-                        <div class="col-md-6"><input type="text" id="landState" class="form-control" placeholder="State"></div>
-                        <div class="col-md-6"><input type="number" id="landPrice" class="form-control" placeholder="Price (Wei)"></div>
-                        <div class="col-md-6"><input type="number" id="landPID" class="form-control" placeholder="PID"></div>
-                        <div class="col-md-6"><input type="number" id="landSurvey" class="form-control" placeholder="Survey No"></div>
-                        <div class="col-12"><input type="text" id="ipfsHash" class="form-control" placeholder="Image URL"></div>
+                    <div class="row g-3">
+                        <div class="col-6"><input type="number" id="landArea" class="form-control" placeholder="Area (Sq ft)"></div>
+                        <div class="col-6"><input type="text" id="landCity" class="form-control" placeholder="City"></div>
+                        <div class="col-6"><input type="text" id="landState" class="form-control" placeholder="State"></div>
+                        <div class="col-6"><input type="number" id="landPrice" class="form-control" placeholder="Price (Wei)"></div>
+                        <div class="col-6"><input type="number" id="landPID" class="form-control" placeholder="Property ID"></div>
+                        <div class="col-6"><input type="number" id="landSurvey" class="form-control" placeholder="Survey No"></div>
+                        <div class="col-12"><input type="text" id="ipfsHash" class="form-control" placeholder="Document URL"></div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="addLand()">Tokenize Land</button>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-primary w-100" onclick="addLand()">Mint Token</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Register Buyer Modal -->
+    <!-- Register Buyer -->
     <div class="modal fade" id="registerBuyerModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Register as Buyer</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border border-secondary">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-white">Buyer Registration</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" id="buyerName" class="form-control mb-2" placeholder="Full Name">
-                    <input type="number" id="buyerAge" class="form-control mb-2" placeholder="Age">
-                    <input type="text" id="buyerCity" class="form-control mb-2" placeholder="City">
-                    <input type="text" id="buyerAadhar" class="form-control mb-2" placeholder="Aadhar Number">
-                    <input type="text" id="buyerPan" class="form-control mb-2" placeholder="Pan Number">
-                    <input type="email" id="buyerEmail" class="form-control mb-2" placeholder="Email Address">
+                    <form class="d-grid gap-3">
+                        <input type="text" id="buyerName" class="form-control" placeholder="Full Name">
+                        <div class="row g-2">
+                            <div class="col-4"><input type="number" id="buyerAge" class="form-control" placeholder="Age"></div>
+                            <div class="col-8"><input type="text" id="buyerCity" class="form-control" placeholder="City"></div>
+                        </div>
+                        <input type="text" id="buyerAadhar" class="form-control" placeholder="Aadhar Number">
+                        <input type="text" id="buyerPan" class="form-control" placeholder="PAN Number">
+                        <input type="email" id="buyerEmail" class="form-control" placeholder="Email">
+                    </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" onclick="registerBuyer()">Submit Registration</button>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-success w-100" onclick="registerBuyer()">Confirm Registration</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="app.js"></script>
 </body>
