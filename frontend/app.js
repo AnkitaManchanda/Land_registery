@@ -1,38 +1,115 @@
 // ==========================================
 // 1. CONFIGURATION
 // ==========================================
-const contractAddress = "0x5DA073C2Ad5e22eA8C1d0973E9DE04ad19189818"; // YOUR ADDRESS
+const contractAddress = "0xac3D89039a9E14Af881811B7c83E688aD71Dee21"; // YOUR ADDRESS
 
 // ==========================================
 // 2. ABI
 // ==========================================
 const contractABI = [
-	{ "constant": false, "inputs": [ { "name": "_name", "type": "string" }, { "name": "_age", "type": "uint256" }, { "name": "_aadharNumber", "type": "string" }, { "name": "_panNumber", "type": "string" }, { "name": "_landsOwned", "type": "string" }, { "name": "_document", "type": "string" } ], "name": "registerSeller", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
-	{ "constant": false, "inputs": [ { "name": "_area", "type": "uint256" }, { "name": "_city", "type": "string" }, { "name": "_state", "type": "string" }, { "name": "landPrice", "type": "uint256" }, { "name": "_propertyPID", "type": "uint256" }, { "name": "_surveyNum", "type": "uint256" }, { "name": "_ipfsHash", "type": "string" }, { "name": "_document", "type": "string" } ], "name": "addLand", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
-	{ "constant": true, "inputs": [{ "name": "i", "type": "uint256" }], "name": "getArea", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" },
+    { "constant": false, "inputs": [ { "name": "_name", "type": "string" }, { "name": "_age", "type": "uint256" }, { "name": "_aadharNumber", "type": "string" }, { "name": "_panNumber", "type": "string" }, { "name": "_landsOwned", "type": "string" }, { "name": "_document", "type": "string" } ], "name": "registerSeller", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
+    { "constant": false, "inputs": [ { "name": "_area", "type": "uint256" }, { "name": "_city", "type": "string" }, { "name": "_state", "type": "string" }, { "name": "landPrice", "type": "uint256" }, { "name": "_propertyPID", "type": "uint256" }, { "name": "_surveyNum", "type": "uint256" }, { "name": "_ipfsHash", "type": "string" }, { "name": "_document", "type": "string" } ], "name": "addLand", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
+    { "constant": true, "inputs": [{ "name": "i", "type": "uint256" }], "name": "getArea", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" },
     { "constant": true, "inputs": [{ "name": "i", "type": "uint256" }], "name": "getCity", "outputs": [{ "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" },
     { "constant": true, "inputs": [{ "name": "i", "type": "uint256" }], "name": "getPrice", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" },
+
     { "constant": false, "inputs": [ { "name": "_name", "type": "string" }, { "name": "_age", "type": "uint256" }, { "name": "_city", "type": "string" }, { "name": "_aadharNumber", "type": "string" }, { "name": "_panNumber", "type": "string" }, { "name": "_document", "type": "string" }, { "name": "_email", "type": "string" } ], "name": "registerBuyer", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
+
+    { "constant": true,
+      "inputs": [{ "name": "_id", "type": "address" }],
+      "name": "isRegistered",
+      "outputs": [{ "name": "", "type": "bool" }],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+
     { "constant": false, "inputs": [ { "name": "_sellerId", "type": "address" }, { "name": "_landId", "type": "uint256" } ], "name": "requestLand", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
     { "constant": true, "inputs": [{ "name": "id", "type": "uint256" }], "name": "getLandOwner", "outputs": [{ "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" },
+    
     { "constant": false, "inputs": [ { "name": "_buyerId", "type": "address" } ], "name": "verifyBuyer", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
     { "constant": false, "inputs": [ { "name": "_sellerId", "type": "address" } ], "name": "verifySeller", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
+
+    { "constant": true,
+      "inputs": [{ "name": "_reqId", "type": "uint256" }],
+      "name": "getBuyerInfoForRequest",
+      "outputs": [
+        { "name": "name", "type": "string" },
+        { "name": "city", "type": "string" },
+        { "name": "email", "type": "string" }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+
     { "constant": false, "inputs": [ { "name": "_reqId", "type": "uint256" } ], "name": "approveRequest", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
+
     { "constant": false, "inputs": [ { "name": "_receiver", "type": "address" }, { "name": "_landId", "type": "uint256" } ], "name": "payment", "outputs": [], "payable": true, "stateMutability": "payable", "type": "function" },
+
     { "constant": false, "inputs": [ { "name": "_landId", "type": "uint256" }, { "name": "_newOwner", "type": "address" } ], "name": "LandOwnershipTransfer", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" },
-    
+
     { "constant": true, "inputs": [], "name": "getLandsCount", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" },
     { "constant": true, "inputs": [], "name": "getSellersCount", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" },
     { "constant": true, "inputs": [], "name": "getRequestsCount", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" },
+
     { "constant": true, "inputs": [ { "name": "_id", "type": "address" } ], "name": "isLandInspector", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "view", "type": "function" },
     
     { "constant": true, "inputs": [], "name": "getSeller", "outputs": [ { "name": "", "type": "address[]" } ], "payable": false, "stateMutability": "view", "type": "function" },
     { "constant": true, "inputs": [], "name": "getBuyer", "outputs": [ { "name": "", "type": "address[]" } ], "payable": false, "stateMutability": "view", "type": "function" },
+
     { "constant": true, "inputs": [ { "name": "_id", "type": "address" } ], "name": "isVerified", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "view", "type": "function" },
     { "constant": true, "inputs": [ { "name": "_id", "type": "address" } ], "name": "isSeller", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "view", "type": "function" },
+
     { "constant": true, "inputs": [ { "name": "_landId", "type": "uint256" } ], "name": "isPaid", "outputs": [ { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "view", "type": "function" },
+
+    {
+  "constant": false,
+  "inputs": [
+    { "name": "_reqId", "type": "uint256" }
+  ],
+  "name": "rejectRequest",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+
+    // NEW: Track rejected requests
+    {
+    "constant": true,
+    "inputs": [
+        { "name": "", "type": "uint256" }
+    ],
+    "name": "RequestRejected",
+    "outputs": [
+        { "name": "", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+    },
+
+    {
+    "constant": true,
+    "inputs": [
+        { "name": "i", "type": "address" }
+    ],
+    "name": "getSellerDetails",
+    "outputs": [
+        { "name": "", "type": "string" },
+        { "name": "", "type": "uint256" },
+        { "name": "", "type": "string" },
+        { "name": "", "type": "string" },
+        { "name": "", "type": "string" },
+        { "name": "", "type": "string" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+    },
+
     { "constant": true, "inputs": [ { "name": "i", "type": "uint256" } ], "name": "getRequestDetails", "outputs": [ { "name": "", "type": "address" }, { "name": "", "type": "address" }, { "name": "", "type": "uint256" }, { "name": "", "type": "bool" } ], "payable": false, "stateMutability": "view", "type": "function" }
 ];
+
 
 let web3;
 let contract;
@@ -63,6 +140,10 @@ async function connectWallet() {
             
             checkIfAdmin();
             loadSellerRequests(); // Check for requests
+            checkMyRequests();  // <--- Add this
+            loadAvailableLands();
+
+
         } catch(e) { console.error(e); }
     }
 }
@@ -88,32 +169,50 @@ async function checkIfAdmin() {
 // ==========================================
 async function loadSellerRequests() {
     if (!userAccount) return;
-    
+
     const listContainer = document.getElementById("sellerRequestsList");
     listContainer.innerHTML = `<div class="spinner-border text-primary spinner-border-sm" role="status"></div> <span class="text-muted small">Scanning...</span>`;
-    
+
     let html = "";
     let count = 0;
-    
+
     const reqCount = await contract.methods.getRequestsCount().call();
-    
-    for(let i=1; i<=reqCount; i++) {
+
+    for (let i = 1; i <= reqCount; i++) {
         const req = await contract.methods.getRequestDetails(i).call();
-        
-        // If I am the seller AND it's not approved yet
-        if(req[0].toLowerCase() == userAccount.toLowerCase() && req[3] == false) {
+
+        // Filter: I am the seller + request not approved yet
+        const isRejected = await contract.methods.RequestRejected(i).call();
+        if ( req[0].toLowerCase() === userAccount.toLowerCase() && req[3] === false && isRejected === false) {
+
+            // 🔥 NEW — Fetch Buyer Info
+            const buyerInfo = await contract.methods.getBuyerInfoForRequest(i).call();
+            const buyerName = buyerInfo[0];
+            const buyerCity = buyerInfo[1];
+            const buyerEmail = buyerInfo[2];
+
             html += `
             <div class="d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25 py-2">
-                <div class="text-start">
+                <div class="text-start small">
                     <span class="badge bg-warning text-dark">Land #${req[2]}</span>
-                    <div class="small text-muted mt-1">Buyer: <span class="text-info">${req[1].substring(0,6)}...</span></div>
+                    <div class="mt-1 fw-bold">${buyerName || "Unknown Buyer"}</div>
+                    <div class="text-info">${buyerEmail || "No Email"}</div>
+                    <div class="text-muted">City: ${buyerCity || "N/A"}</div>
                 </div>
-                <button class="btn btn-sm btn-primary" onclick="approveRequestAuto(${i})">Approve <i class="fas fa-check"></i></button>
+                <div>
+                    <button class="btn btn-sm btn-success me-2" onclick="approveRequestAuto(${i})">
+                        Approve <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="rejectRequestAuto(${i})">
+                        Reject <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
             </div>`;
             count++;
         }
     }
-    
+
     if (count === 0) {
         listContainer.innerHTML = `<div class="text-center text-muted small py-3"><i class="far fa-folder-open mb-2 d-block fa-2x opacity-25"></i>No pending requests</div>`;
     } else {
@@ -121,11 +220,19 @@ async function loadSellerRequests() {
     }
 }
 
+
 async function approveRequestAuto(reqId) {
     await contract.methods.approveRequest(reqId).send({ from: userAccount });
     alert("Request Approved! Buyer can now pay.");
     loadSellerRequests();
 }
+
+async function rejectRequestAuto(reqId) {
+    await contract.methods.rejectRequest(reqId).send({ from: userAccount });
+    alert("Request Rejected!");
+    loadSellerRequests();
+}
+
 
 // ==========================================
 // 5. SMART ADMIN INBOX
@@ -268,14 +375,89 @@ async function registerBuyer() {
     alert("Registered! Wait for verification.");
 }
 
+async function checkMyRequests() {
+    const reqCount = await contract.methods.getRequestsCount().call();
+    let html = "";
+    for (let i = 1; i <= reqCount; i++) {
+        const req = await contract.methods.getRequestDetails(i).call();
+        if (req[1].toLowerCase() === userAccount.toLowerCase()) {
+            const rejected = await contract.methods.RequestRejected(i).call();
+            const approved = req[3];
+
+            if (approved) html += `<div class="alert alert-success small">Land #${req[2]} - Approved ✓</div>`;
+            else if (rejected) html += `<div class="alert alert-danger small">Land #${req[2]} - Rejected ✗</div>`;
+            else html += `<div class="alert alert-warning small">Land #${req[2]} - Pending...</div>`;
+        }
+    }
+    document.getElementById("buyerStatusBox").innerHTML = html;
+}
+
 async function requestLand() {
     const landId = document.getElementById("requestLandId").value;
     const owner = await contract.methods.getLandOwner(landId).call();
-    if(owner.toLowerCase() == userAccount.toLowerCase()) return alert("You own this land.");
+
+    if (!owner || owner === "0x0000000000000000000000000000000000000000") {
+        alert("Invalid land ID.");
+        return;
+    }
+
+    // 1️⃣ Buyer cannot request own land
+    if (owner.toLowerCase() === userAccount.toLowerCase()) {
+        alert("You already own this land.");
+        return;
+    }
+
+    // 2️⃣ Seller must be verified
+    const isOwnerSeller = await contract.methods.isSeller(owner).call();
+    const isVerifiedSeller = await contract.methods.isVerified(owner).call();
+
+    if (!isOwnerSeller || !isVerifiedSeller) {
+        alert("This land is not available for sale.");
+        return;
+    }
+
+    // 3️⃣ Buyer cannot request same land twice
+    const reqCount = await contract.methods.getRequestsCount().call();
+    for (let r = 1; r <= reqCount; r++) {
+        const req = await contract.methods.getRequestDetails(r).call();
+
+        if (
+            req[1].toLowerCase() === userAccount.toLowerCase() &&
+            req[2] == landId
+        ) {
+            alert("You already requested this land.");
+            return;
+        }
+    }
+
+    // 4️⃣ Land cannot have an approved request for ANY buyer
+    for (let r = 1; r <= reqCount; r++) {
+        const req = await contract.methods.getRequestDetails(r).call();
+
+        if (req[2] == landId && req[3] === true) {
+            alert("This land is already approved for another buyer.");
+            return;
+        }
+    }
+
+    // 5️⃣ Land cannot be paid already
+    const isPaid = await contract.methods.isPaid(landId).call();
+    if (isPaid) {
+        alert("This land has already been purchased.");
+        return;
+    }
+
+    // 6️⃣ Valid - send request
     await contract.methods.requestLand(owner, landId).send({ from: userAccount });
+
     alert("Request Sent to Seller!");
+
+    checkMyRequests();
+    loadAvailableLands();
     loadStats();
 }
+
+
 
 async function makePayment() {
     const landId = document.getElementById("payLandId").value;
@@ -313,3 +495,100 @@ async function getLandDetails() {
         document.getElementById("landResult").innerHTML = `<div class="alert alert-danger bg-danger bg-opacity-10 border-danger text-danger mt-3"><i class="fas fa-exclamation-circle me-2"></i>Land not found</div>`; 
     }
 }
+
+async function loadAvailableLands() {
+    const list = document.getElementById("availableLandsList");
+    list.innerHTML = `<div class="text-muted">Loading...</div>`;
+
+    let html = "";
+    const landsCount = await contract.methods.getLandsCount().call();
+    const reqCount = await contract.methods.getRequestsCount().call();
+
+    for (let i = 1; i <= landsCount; i++) {
+        const owner = await contract.methods.getLandOwner(i).call();
+        const isOwnerSeller = await contract.methods.isSeller(owner).call();
+        const isVerifiedSeller = await contract.methods.isVerified(owner).call();
+
+        // Exclude owned-by-buyer, unverified sellers, non-sellers
+        if (
+            owner.toLowerCase() === userAccount.toLowerCase() ||
+            !isOwnerSeller ||
+            !isVerifiedSeller
+        ) continue;
+
+        // 🔎 Check if land already approved for someone
+        let hasApprovedRequest = false;
+        for (let r = 1; r <= reqCount; r++) {
+            const req = await contract.methods.getRequestDetails(r).call();
+            if (req[2] == i && req[3] === true) {
+                hasApprovedRequest = true;
+                break;
+            }
+        }
+        if (hasApprovedRequest) continue;  // Skip unavailable land
+
+        const price = await contract.methods.getPrice(i).call();
+        const city = await contract.methods.getCity(i).call();
+        const area = await contract.methods.getArea(i).call();
+
+        const sellerInfo = await contract.methods.getSellerDetails(owner).call();
+        const sellerName = sellerInfo[0];
+
+        html += `
+        <div class="p-3 border rounded bg-dark text-white mb-2">
+            <div class="fw-bold">Land #${i}</div>
+            <div>City: <span class="text-info">${city}</span></div>
+            <div>Area: ${area} sq.ft</div>
+            <div>Price: <span class="text-warning">${price} wei</span></div>
+            <div class="text-secondary small">Seller: ${sellerName}</div>
+            <button class="btn btn-sm btn-primary mt-2"
+                onclick="requestLandById(${i})">
+                Request Purchase
+            </button>
+        </div>
+        `;
+    }
+
+    if (html === "") {
+        list.innerHTML = `<div class="text-secondary small text-center py-3">
+            No lands available for sale.
+        </div>`;
+    } else {
+        list.innerHTML = html;
+    }
+}
+
+
+// Helper for clicking button
+async function requestLandById(landId) {
+    const owner = await contract.methods.getLandOwner(landId).call();
+
+    // Prevent requesting your own land
+    if (owner.toLowerCase() === userAccount.toLowerCase()) {
+        alert("You already own this land.");
+        return;
+    }
+
+    const reqCount = await contract.methods.getRequestsCount().call();
+
+    // Check if buyer already has a request for this land
+    for (let r = 1; r <= reqCount; r++) {
+        const req = await contract.methods.getRequestDetails(r).call();
+
+        if (
+            req[1].toLowerCase() === userAccount.toLowerCase() && 
+            req[2] == landId
+        ) {
+            alert("You have already requested this land.");
+            return;
+        }
+    }
+
+    // Otherwise send a new request
+    await contract.methods.requestLand(owner, landId).send({ from: userAccount });
+    alert("Request Sent to Seller!");
+
+    checkMyRequests();
+    loadAvailableLands();
+}
+

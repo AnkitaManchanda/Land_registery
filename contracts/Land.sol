@@ -66,6 +66,8 @@ contract Land {
     mapping(uint => bool) public RequestStatus;
     mapping(uint => bool) public RequestedLands;
     mapping(uint => bool) public PaymentReceived;
+    mapping(uint => bool) public RequestRejected;
+
 
     address public Land_Inspector;
     address[] public sellers;
@@ -88,7 +90,7 @@ contract Land {
         // -------------------------------------------------------
         // FIXED: This is now a valid Ethereum Address (Account 0)
         // -------------------------------------------------------
-        Land_Inspector = 0xf49f581DA1CC38FC3FD8247e86A3Ae16a0C3e766; 
+        Land_Inspector = 0xb985CE8ae1A06a6001F58D55c0B3d961b5e4Df2E; 
         
         addLandInspector("Inspector 1", 45, "Tehsil Manager");
     }
@@ -330,4 +332,22 @@ contract Land {
         PaymentReceived[_landId] = true;
         _receiver.transfer(msg.value);
     }
+
+    function getBuyerInfoForRequest(uint _reqId) 
+    public 
+    view 
+    returns (string memory name, string memory city, string memory email) 
+{
+    address buyerAddr = RequestsMapping[_reqId].buyerId;
+    Buyer memory b = BuyerMapping[buyerAddr];
+    return (b.name, b.city, b.email);
+}
+
+    function rejectRequest(uint _reqId) public {
+        require(isSeller(msg.sender) && isVerified(msg.sender));
+        require(!RequestStatus[_reqId], "Request already approved");
+        RequestRejected[_reqId] = true;
+    }
+
+
 }
